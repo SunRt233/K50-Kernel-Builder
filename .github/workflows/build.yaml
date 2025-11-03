@@ -9,7 +9,18 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses:
+          actions/checkout@master
+
+          # 👇 新增：系统信息输出（简洁美观）
+      - name: System Info
+        run: |
+          echo "🖥️  **System Configuration**"
+          echo "----------------------------"
+          echo "CPU   : $(nproc) cores ($(lscpu | grep 'Model name' | awk -F': ' '{gsub(/^[ \t]+|[ \t]+$/, \"\", $2); print $2}' | cut -c1-40))"
+          echo "Memory: $(free -h | awk '/^Mem:/ {print $2}') RAM (Free: $(free -h | awk '/^Mem:/ {print $7}'))"
+          echo "Disk  : $(df -h / | awk 'NR==2 {print $2, \"used out of\", $4, \"(\"$5\" used)\"}')"
+          echo "OS    : $(grep PRETTY_NAME /etc/os-release | cut -d\"=\" -f2 | tr -d '\"')"
 
       - name: Install deps
         run: |
@@ -46,16 +57,6 @@ jobs:
         run: |
           chmod +x build_script.sh
           (. ./build_script.sh ;prepare)
-
-      # 👇 新增：系统信息输出（简洁美观）
-      - name: System Info
-        run: |
-          echo "🖥️  **System Configuration**"
-          echo "----------------------------"
-          echo "CPU   : $(nproc) cores ($(lscpu | grep 'Model name' | awk -F': ' '{gsub(/^[ \t]+|[ \t]+$/, \"\", $2); print $2}' | cut -c1-40))"
-          echo "Memory: $(free -h | awk '/^Mem:/ {print $2}') RAM (Free: $(free -h | awk '/^Mem:/ {print $7}'))"
-          echo "Disk  : $(df -h / | awk 'NR==2 {print $2, \"used out of\", $4, \"(\"$5\" used)\"}')"
-          echo "OS    : $(grep PRETTY_NAME /etc/os-release | cut -d\"=\" -f2 | tr -d '\"')"
 
       - name: Build
         run: |

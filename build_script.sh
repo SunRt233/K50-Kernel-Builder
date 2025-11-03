@@ -62,5 +62,6 @@ main() {
 	echo "$(akb env expend_env)" | while read line; do
 		export $line
 	done
+	akb env show
 	build
 }
