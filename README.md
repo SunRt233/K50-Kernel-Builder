@@ -1,6 +1,6 @@
 # K50 内核构建器
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status//build.yaml)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/SunRt233/K50-Kernel-Builder/build.yaml)
 
 这是一个用于自动构建 K50 内核的项目，基于 GitHub Actions 实现自动化构建流程。
 
