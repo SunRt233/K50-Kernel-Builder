@@ -60,9 +60,10 @@ build() {
 main() {
 	akb env run akb toolchains setup || { echo "akb toolchains setup failed"; exit $?;  }
 	echo "$(akb env expend_env)" | while read line; do
-		export $line
+		eval "export $line"
 	done
-	akb env show
-	echo "$PATH"
+	echo "注入PATH"
+	echo "PATH=$PATH"
+	echo "开始构建"
 	build
 }
