@@ -4,26 +4,29 @@
 CURRENT_DIR=$(pwd)
 export PATH="$CURRENT_DIR/akb/src:$PATH"
 export REPO_DIR="$CURRENT_DIR"
-KENREL_SOURCE_DIR="$CURRENT_DIR/kernel_source"
+KERNEL_SOURCE_DIR="$CURRENT_DIR/kernel_source"
 
 prepare_akb() {
 	if [ -d "$CURRENT_DIR/akb" ]; then
 		echo "akb exists"
-		return
+		return 0
 	fi
-	git clone https://git.yunzhu.host/SunRt233/AKB.git "$CURRENT_DIR/akb"
+	git clone https://git.yunzhu.host/SunRt233/AKB.git --depth=1 "$CURRENT_DIR/akb" || { echo "Failed to clone AKB repository"; return 1; }
 }
+
 prepare_kernel_source() {
-	if [ -d "$KENREL_SOURCE_DIR" ]; then
+	if [ -d "$KERNEL_SOURCE_DIR" ]; then
 		echo "kernel source exists"
-		return
+		return 0
 	fi
-	git clone https://github.com/ztc1997/android_gki_kernel_5.10_common.git "$KENREL_SOURCE_DIR"
+	git --recurse --depth=1 clone https://github.com/ztc1997/android_gki_kernel_5.10_common.git "$KERNEL_SOURCE_DIR" || { echo "Failed to clone kernel source repository"; return 1; }
 }
+
 prepare() {
-	prepare_akb
-	prepare_kernel_source
+	prepare_akb || { echo "prepare_akb failed"; exit 1; }
+	prepare_kernel_source || { echo "prepare_kernel_source failed"; exit 1; }
 }
+
 build() {
 	START_SEC=$(date +%s)
 	# 参数设定
@@ -48,7 +51,7 @@ build() {
 		CLANG_TRIPLE=aarch64-linux-android- \
 		$CC_ADDITION_FLAGS \
 		CC=$CC"
-	cd "$KENREL_SOURCE_DIR"
+	cd "$KERNEL_SOURCE_DIR"
 	make ${args} gki_defconfig
 	make ${args}
 
